@@ -101,22 +101,42 @@ body::after {
 /* glitch nickname */
 .glitch-name {
   font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px;
-  color:#c084fc; margin-bottom:10px; position:relative;
-  animation:glitchAnim 4s infinite;
+  color:#c084fc; margin-bottom:10px; position:relative; display:inline-block;
 }
-@keyframes glitchAnim {
-  0%,90%,100%{text-shadow:none;transform:none;}
-  91%{text-shadow:-2px 0 #ff0080,2px 0 #00ffff;transform:skewX(-3deg);}
-  92%{text-shadow:2px 0 #ff0080,-2px 0 #00ffff;transform:skewX(3deg);}
-  93%{text-shadow:none;transform:none;}
-  94%{text-shadow:-1px 0 #ff0080,1px 0 #00ffff;transform:skewX(-1deg);}
-  95%{text-shadow:none;transform:none;}
+.glitch-name::before, .glitch-name::after {
+  content: attr(data-text);
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  background:transparent;
+}
+.glitch-name::before {
+  color:#ff0080; clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);
+  animation:glitchB 4s infinite; transform:translateX(0);
+}
+.glitch-name::after {
+  color:#00ffff; clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%);
+  animation:glitchA 4s infinite; transform:translateX(0);
+}
+@keyframes glitchA {
+  0%,89%,100%{transform:translateX(0);opacity:0;}
+  90%{transform:translateX(-3px);opacity:1;}
+  91%{transform:translateX(3px);opacity:1;}
+  92%{transform:translateX(0);opacity:0;}
+  94%{transform:translateX(2px);opacity:1;}
+  95%{transform:translateX(0);opacity:0;}
+}
+@keyframes glitchB {
+  0%,89%,100%{transform:translateX(0);opacity:0;}
+  90%{transform:translateX(3px);opacity:1;}
+  91%{transform:translateX(-3px);opacity:1;}
+  92%{transform:translateX(0);opacity:0;}
+  94%{transform:translateX(-2px);opacity:1;}
+  95%{transform:translateX(0);opacity:0;}
 }
 
 .intro-title{font-size:clamp(17px,5.2vw,23px);font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--text);text-align:center;margin-bottom:5px;line-height:1.25;}
 .intro-date{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:18px;text-align:center;}
 
-.tw-box{width:100%;max-width:340px;background:rgba(0,0,0,0.38);border:1px solid rgba(232,135,74,0.1);border-radius:3px;padding:13px 15px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);line-height:2.1;min-height:90px;margin-bottom:18px;white-space:pre-line;}
+.tw-box{width:100%;max-width:340px;background:rgba(0,0,0,0.38);border:1px solid rgba(232,135,74,0.1);border-radius:3px;padding:13px 15px;font-family:'Share Tech Mono',monospace;font-size:clamp(9.5px,2.6vw,11.5px);color:var(--muted);line-height:2.1;min-height:90px;margin-bottom:18px;white-space:pre-line;}
 .tw-cur{display:inline-block;width:7px;height:13px;background:var(--orange);vertical-align:middle;margin-left:2px;animation:blCur 0.75s step-end infinite;}
 @keyframes blCur{50%{opacity:0;}}
 
@@ -133,6 +153,90 @@ body::after {
 @keyframes shk{0%,100%{transform:translateX(0);}18%{transform:translateX(-9px);}36%{transform:translateX(9px);}54%{transform:translateX(-6px);}72%{transform:translateX(6px);}}
 .q-hint{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);letter-spacing:2px;min-height:18px;margin-bottom:24px;opacity:0;transform:translateY(-4px);transition:opacity 0.28s,transform 0.28s;}
 .q-hint.show{opacity:1;transform:translateY(0);}
+
+/* spectrum slider */
+.slider-readout {
+  font-family:'Share Tech Mono',monospace; font-size:22px; font-weight:700;
+  color:var(--amber); letter-spacing:3px; margin-bottom:18px;
+  width:100%; display:flex; align-items:center; gap:10px;
+  transition: color 0.2s;
+}
+.slider-color-dot {
+  display:inline-block; width:18px; height:18px; border-radius:50%;
+  background:#7b00ff;
+  box-shadow: 0 0 12px 4px #7b00ff;
+  transition: background 0.15s, box-shadow 0.15s;
+  animation: dotPulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes dotPulse {
+  0%,100% { transform:scale(1); }
+  50%      { transform:scale(1.25); }
+}
+
+.slider-glow-wrap {
+  width:100%; position:relative; padding:18px 0; margin-bottom:4px;
+}
+/* dynamic glow behind slider track */
+.slider-glow-wrap::before {
+  content:''; position:absolute;
+  left:0; right:0; top:50%; transform:translateY(-50%);
+  height:30px; border-radius:15px;
+  background: var(--slider-glow, rgba(123,0,255,0.15));
+  filter: blur(12px);
+  transition: background 0.15s;
+  pointer-events:none;
+}
+
+.spectrum-slider {
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:8px; border-radius:4px; outline:none;
+  cursor:pointer; position:relative; z-index:1;
+  background: linear-gradient(to right,
+    #000 0%,
+    #0d0020 8%,
+    #3b0083 18%,
+    #7b00ff 26.4%,
+    #4444ff 31%,
+    #0066ff 36%,
+    #00aacc 42%,
+    #00cc88 48%,
+    #44ee00 54%,
+    #aaee00 59%,
+    #ffee00 64%,
+    #ffaa00 69%,
+    #ff5500 74%,
+    #cc0000 79.2%,
+    #220000 88%,
+    #000 100%
+  );
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+.spectrum-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:28px; height:28px; border-radius:50%;
+  background: var(--thumb-bg, #7b00ff);
+  border:3px solid rgba(255,255,255,0.9);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.2), 0 0 16px 4px var(--thumb-glow, rgba(123,0,255,0.8));
+  cursor:pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.spectrum-slider:active::-webkit-slider-thumb,
+.spectrum-slider:focus::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+.spectrum-slider::-moz-range-thumb {
+  width:28px; height:28px; border-radius:50%;
+  background: var(--thumb-bg, #7b00ff);
+  border:3px solid rgba(255,255,255,0.9);
+  box-shadow: 0 0 16px 4px var(--thumb-glow, rgba(123,0,255,0.8));
+  cursor:pointer;
+}
+.slider-labels {
+  display:flex; align-items:center;
+  font-family:'Share Tech Mono',monospace; font-size:9px;
+  color:var(--dim); letter-spacing:1px; margin-bottom:14px; width:100%;
+}
 
 /* ══ BUTTONS — better responsive ══ */
 .btn {
@@ -265,47 +369,80 @@ body::after {
   <!-- INTRO -->
   <div class="screen active" id="s0">
     <canvas id="bhCanvas" width="160" height="160" style="margin-bottom:18px;flex-shrink:0;"></canvas>
-    <div class="glitch-name" id="glitchName">Cͤ͒̒y̴̶̟n̘ͮ́_̷̤̯_͕̐̀</div>
+    <div class="glitch-name" data-text="Cyn__  ELS-21">Cyn__&nbsp; ELS-21</div>
     <h1 class="intro-title">Incoming<br>Transmission</h1>
     <div class="intro-date">// 07.04.2026 — 21 LET — LIBEREC //</div>
     <div class="tw-box"><span id="twTxt"></span><span class="tw-cur" id="twCur"></span></div>
     <button class="btn" id="startBtn" onclick="goTo(1)"><span>◈ &nbsp; ZAČÍT</span></button>
   </div>
 
-  <!-- Q1 -->
+  <!-- Q1 — SLIDER -->
   <div class="screen" id="s1">
     <div class="q-wrap">
-      <div class="q-step">// ELS-21 · Verify 01 / 03</div>
-      <div class="q-text">Jakou barvu<br>máš velmi ráda?</div>
-      <input class="q-input" id="q1" type="text" placeholder="_ _ _"
-             autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+      <div class="q-step">// OPTICKÉ SENZORY · 01 / 05</div>
+      <div class="q-text" style="font-size:clamp(13px,3.8vw,17px);">Jaká vlnová délka<br>viditelného záření<br>je tvému zraku nejsympatičtější?</div>
+      <div class="slider-readout" id="sliderReadout">
+        <span id="sliderVal">415</span> nm
+        <span class="slider-color-dot" id="sliderDot"></span>
+      </div>
+      <div class="slider-glow-wrap" id="sliderGlowWrap">
+        <input type="range" id="q1slider" min="300" max="800" step="1" value="415"
+               oninput="updateSlider()" class="spectrum-slider">
+      </div>
+      <div class="slider-labels">
+        <span>UV</span><span style="flex:1;text-align:center;">— viditelné spektrum —</span><span>IR</span>
+      </div>
       <div class="q-hint" id="h1"></div>
     </div>
-    <button class="btn show" id="b1" onclick="checkQ(1)"><span>POTVRDIT →</span></button>
+    <button class="btn show" id="b1"><span>POTVRDIT →</span></button>
   </div>
 
-  <!-- Q2 -->
+  <!-- Q2 — ŠKOLA -->
   <div class="screen" id="s2">
     <div class="q-wrap">
-      <div class="q-step">// ELS-21 · Verify 02 / 03</div>
-      <div class="q-text">Kdy jsme nastoupili<br>na průmku do prváku?</div>
+      <div class="q-step">// PAMĚŤOVÉ LOGY · 02 / 05</div>
+      <div class="q-text">V jakém roce jsme nastoupili<br>na průmku do prváku?</div>
       <input class="q-input" id="q2" type="text" inputmode="numeric" placeholder="rok..."
              autocomplete="off" spellcheck="false">
       <div class="q-hint" id="h2"></div>
     </div>
-    <button class="btn show" id="b2" onclick="checkQ(2)"><span>POTVRDIT →</span></button>
+    <button class="btn show" id="b2" ><span>POTVRDIT →</span></button>
   </div>
 
-  <!-- Q3 -->
+  <!-- Q3 — KINO -->
   <div class="screen" id="s3">
     <div class="q-wrap">
-      <div class="q-step">// ELS-21 · Verify 03 / 03</div>
+      <div class="q-step">// BUDOUCÍ MISE · 03 / 05</div>
       <div class="q-text">Na jaký příští film<br>jdeme do kina?</div>
-      <input class="q-input" id="q3" type="text" placeholder="_ _ _"
+      <input class="q-input" id="q3" type="text" placeholder="název filmu..."
              autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
       <div class="q-hint" id="h3"></div>
     </div>
-    <button class="btn show" id="b3" onclick="checkQ(3)"><span>DEŠIFROVAT ◈</span></button>
+    <button class="btn show" id="b3" ><span>POTVRDIT →</span></button>
+  </div>
+
+  <!-- Q4 — BREAKING BENJAMIN -->
+  <div class="screen" id="s4">
+    <div class="q-wrap">
+      <div class="q-step">// AKUSTICKÁ DATABÁZE · 04 / 05</div>
+      <div class="q-text" style="font-size:clamp(13px,3.8vw,17px);">Tvůj nejoblíbenější záznam<br>od Breaking Benjamin?</div>
+      <input class="q-input" id="q4" type="text" placeholder="název skladby..."
+             autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+      <div class="q-hint" id="h4"></div>
+    </div>
+    <button class="btn show" id="b4" ><span>POTVRDIT →</span></button>
+  </div>
+
+  <!-- Q5 — KABÁT -->
+  <div class="screen" id="s5">
+    <div class="q-wrap">
+      <div class="q-step">// FINÁLNÍ TEST · 05 / 05</div>
+      <div class="q-text" style="font-size:clamp(13px,3.8vw,17px);">Která skupina vydala<br>stopu s kódem „Malá dáma"?</div>
+      <input class="q-input" id="q5" type="text" placeholder="název skupiny..."
+             autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+      <div class="q-hint" id="h5"></div>
+    </div>
+    <button class="btn show" id="b5" ><span>DEŠIFROVAT ◈</span></button>
   </div>
 
   <!-- EVAL -->
@@ -585,12 +722,61 @@ requestAnimationFrame(drawMain);
 setTimeout(spawnPulse,3000);
 
 /* ══════════════════════════════════════════
+   SLIDER
+══════════════════════════════════════════ */
+// wavelength → RGB (simplified CIE approximation)
+function wlToRgb(wl){
+  let r,g,b;
+  if(wl<380) return [30,0,60];
+  if(wl>=380&&wl<440){ r=(440-wl)/60; g=0; b=1; }
+  else if(wl<490){ r=0; g=(wl-440)/50; b=1; }
+  else if(wl<510){ r=0; g=1; b=(510-wl)/20; }
+  else if(wl<580){ r=(wl-510)/70; g=1; b=0; }
+  else if(wl<645){ r=1; g=(645-wl)/65; b=0; }
+  else if(wl<=750){ r=1; g=0; b=0; }
+  else return [20,0,0];
+  // dim edges
+  let factor=1;
+  if(wl<420) factor=0.3+0.7*(wl-380)/40;
+  else if(wl>700) factor=0.3+0.7*(750-wl)/50;
+  return [Math.round(r*255*factor), Math.round(g*255*factor), Math.round(b*255*factor)];
+}
+
+function updateSlider(){
+  const sl=document.getElementById('q1slider');
+  if(!sl) return;
+  const val=parseInt(sl.value);
+  document.getElementById('sliderVal').textContent=val;
+  const [r,g,b]=wlToRgb(val);
+  const col=`rgb(${r},${g},${b})`;
+  const colA=`rgba(${r},${g},${b},0.85)`;
+  const glowA=`rgba(${r},${g},${b},0.2)`;
+
+  // update dot
+  const dot=document.getElementById('sliderDot');
+  if(dot){ dot.style.background=col; dot.style.boxShadow=`0 0 14px 5px ${colA}`; }
+
+  // update thumb via CSS custom properties on slider element
+  sl.style.setProperty('--thumb-bg', col);
+  sl.style.setProperty('--thumb-glow', colA);
+
+  // update glow wrap
+  const wrap=document.getElementById('sliderGlowWrap');
+  if(wrap) wrap.style.setProperty('--slider-glow', glowA);
+}
+
+// init slider on page load
+document.addEventListener('DOMContentLoaded', updateSlider);
+setTimeout(updateSlider, 100);
+
+/* ══════════════════════════════════════════
    TYPEWRITER
 ══════════════════════════════════════════ */
 const twMsgs=[
   'TARS: Zachycen přenos pro 3li_22...',
   'TARS: Eliška // Liberec // 07.04.2026',
-  'TARS: Dnes ti je 21 let.\nTARS: Ověř svou identitu.',
+  'TARS: Systém hlásí dosažení 21. úrovně existence.',
+  'TARS: Ověř svou identitu.',
 ];
 let mi=0,ci=0;
 const twEl=document.getElementById('twTxt');
@@ -611,8 +797,8 @@ setTimeout(typeNext,700);
 /* ══════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════ */
-const SCREENS=['s0','s1','s2','s3','sEval','sSuccess'];
-const PROGRESS=[0,20,45,70,88,100];
+const SCREENS=['s0','s1','s2','s3','s4','s5','sEval','sSuccess'];
+const PROGRESS=[0,   14,  28,  44,  60,  76,  90,    100];
 let cur=0,busy=false;
 
 function goTo(idx){
@@ -625,15 +811,22 @@ function goTo(idx){
     toEl.classList.add('active');
     cur=idx;
     document.getElementById('prog').style.width=PROGRESS[idx]+'%';
-    if(idx>=1&&idx<=3){
-      const inp=document.getElementById('q'+idx);
-      inp.value=''; inp.classList.remove('correct','wrong');
-      document.getElementById('h'+idx).classList.remove('show');
-      document.getElementById('b'+idx).classList.remove('disabled-btn');
-      setTimeout(()=>inp.focus(),460);
+    // questions 1-5 are screens idx 1-5
+    if(idx>=1&&idx<=5){
+      checking = false;
+      if(idx===1){
+        const sl=document.getElementById('q1slider');
+        if(sl){sl.value=415;updateSlider();}
+        document.getElementById('h1').classList.remove('show');
+      } else {
+        const inp=document.getElementById('q'+idx);
+        if(inp){inp.value='';inp.classList.remove('correct','wrong');}
+        document.getElementById('h'+idx).classList.remove('show');
+        setTimeout(()=>{ if(inp) inp.focus(); },460);
+      }
     }
-    if(idx===4)startEval();
-    if(idx===5)startCountdown();
+    if(idx===6)startEval();
+    if(idx===7)startCountdown();
     busy=false;
   },280);
 }
@@ -643,46 +836,63 @@ function goTo(idx){
 ══════════════════════════════════════════ */
 function norm(s){ return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 
-let q3type=''; // 'odyssey' or 'backrooms'
+let q3type = '';
 
-function isOk(n,v){
-  const a=norm(v);
-  if(n===1) return /fi[ao]+lov/.test(a);
+function isOk(n, v){
+  const a = norm(v);
+  if(n===1){
+    const wl = parseInt(document.getElementById('q1slider').value);
+    return wl >= 380 && wl <= 450;
+  }
   if(n===2) return a.includes('2020');
   if(n===3){
-    const isOdy=a.startsWith('odyss')||a.startsWith('odys')||a.startsWith('odis')||/^od[iy]+s/.test(a);
-    const isBr=/back\s*room/.test(a)||a.includes('bakroom')||a.includes('backroo')||a.includes('backrum')||a==='br'||a.includes('the back')||a.startsWith('backr');
-    if(isOdy){q3type='odyssey';return true;}
-    if(isBr){q3type='backrooms';return true;}
+    const isOdy = a.startsWith('odyss')||a.startsWith('odys')||a.startsWith('odis')||/^od[iy]+s/.test(a);
+    const isBr  = /back\s*room/.test(a)||a.includes('bakroom')||a.includes('backroo')||a.startsWith('backr');
+    if(isOdy){ q3type='odyssey'; return true; }
+    if(isBr){  q3type='backrooms'; return true; }
     return false;
   }
+  if(n===4) return a.includes('diary of jane') || a.includes('diary jane');
+  if(n===5) return /^kab[aá][dt]i?$/.test(a) || a==='kabát' || a==='kabat';
 }
 
+let checking = false;
+
 function checkQ(n){
-  const btn=document.getElementById('b'+n);
-  const inp=document.getElementById('q'+n);
-  const hint=document.getElementById('h'+n);
-  if(btn.classList.contains('disabled-btn'))return;
-  btn.classList.add('disabled-btn');
-  const val=inp.value;
-  if(!val.trim()){showWrong(inp,hint,'⚠ Zadej odpověď');btn.classList.remove('disabled-btn');return;}
-  if(isOk(n,val)){
-    inp.classList.remove('wrong');inp.classList.add('correct');hint.classList.remove('show');
+  if(checking) return;
+  checking = true;
+
+  const btn  = document.getElementById('b'+n);
+  const hint = document.getElementById('h'+n);
+  const inp  = (n===1) ? null : document.getElementById('q'+n);
+  const val  = inp ? inp.value : '';
+
+  // visual press feedback
+  btn.style.opacity = '0.6';
+  setTimeout(()=>{ btn.style.opacity=''; }, 200);
+
+  if(n !== 1 && !val.trim()){
+    showWrong(inp, hint, '⚠ Zadej odpověď');
+    checking = false;
+    return;
+  }
+
+  if(isOk(n, val)){
+    if(inp){ inp.classList.remove('wrong'); inp.classList.add('correct'); }
+    hint.classList.remove('show');
+
     if(n===1){
       const pf=document.getElementById('purpleFlash');
       pf.style.opacity='1';
-      // spawn purple star particles
       for(let i=0;i<60;i++){
-        const angle=Math.random()*Math.PI*2;
-        const speed=1.5+Math.random()*5;
+        const angle=Math.random()*Math.PI*2, speed=1.5+Math.random()*5;
         fwParticles.push({x:W/2,y:H/2,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,a:1,da:0.012+Math.random()*0.012,r:1.2+Math.random()*2.5,col:'#c084fc',grav:0.02,trail:[]});
       }
       for(let i=0;i<30;i++){
-        const angle=Math.random()*Math.PI*2;
-        const speed=0.8+Math.random()*3;
+        const angle=Math.random()*Math.PI*2, speed=0.8+Math.random()*3;
         fwParticles.push({x:W/2,y:H/2,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,a:0.9,da:0.008,r:1.5+Math.random()*3,col:'#e879f9',grav:0.015,trail:[]});
       }
-      setTimeout(()=>{pf.style.opacity='0';},1600);
+      setTimeout(()=>{ pf.style.opacity='0'; }, 1600);
     }
     if(n===2){
       spawnFireworks();
@@ -694,18 +904,21 @@ function checkQ(n){
       if(q3type==='odyssey') initWarp();
       if(q3type==='backrooms') startBackrooms();
     }
-    setTimeout(()=>goTo(n<3?n+1:4),n===2?800:400);
+
+    const delay = (n===2) ? 800 : 400;
+    setTimeout(()=>{ checking = false; goTo(n < 5 ? n+1 : 6); }, delay);
+
   } else {
-    showWrong(inp,hint,'⚠ MISMATCH — zkus znovu');
-    btn.classList.remove('disabled-btn');
+    showWrong(inp, hint, n===1 ? '⚠ Posuň do fialové oblasti spektra' : '⚠ MISMATCH — zkus znovu');
+    checking = false;
   }
 }
 
-function showWrong(inp,hint,msg){
-  inp.classList.remove('wrong'); void inp.offsetWidth;
-  inp.classList.add('wrong');
-  hint.textContent=msg; hint.classList.add('show');
-  setTimeout(()=>inp.classList.remove('wrong'),500);
+function showWrong(inp, hint, msg){
+  if(inp){ inp.classList.remove('wrong'); void inp.offsetWidth; inp.classList.add('wrong'); }
+  hint.textContent = msg;
+  hint.classList.add('show');
+  if(inp) setTimeout(()=>inp.classList.remove('wrong'), 500);
 }
 
 /* ══════════════════════════════════════════
@@ -831,9 +1044,28 @@ function openPDF(){
   setTimeout(spawnFireworks,700);
 }
 
-// enter key
-[1,2,3].forEach(n=>{
-  document.getElementById('q'+n).addEventListener('keydown',e=>{if(e.key==='Enter')checkQ(n);});
+// Button listeners — works on both mobile tap and desktop click
+[1,2,3,4,5].forEach(n=>{
+  const btn = document.getElementById('b'+n);
+  if(!btn) return;
+  // Use touchend for mobile (faster, no 300ms delay), click as fallback
+  let touched = false;
+  btn.addEventListener('touchend', e=>{
+    e.preventDefault();
+    touched = true;
+    checkQ(n);
+    setTimeout(()=>{ touched=false; }, 500);
+  }, {passive:false});
+  btn.addEventListener('click', ()=>{
+    if(touched) return; // already handled by touchend
+    checkQ(n);
+  });
+});
+
+// Enter key for text inputs Q2-Q5
+[2,3,4,5].forEach(n=>{
+  const el = document.getElementById('q'+n);
+  if(el) el.addEventListener('keydown', e=>{ if(e.key==='Enter') checkQ(n); });
 });
 
 /* ══════════════════════════════════════════
